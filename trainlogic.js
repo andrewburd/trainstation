@@ -39,7 +39,7 @@ $("#add-employee-btn").click(function(event) {
   const newEmp = {
     name: $("#employee-name-input").val().trim(),
     role: $("#role-input").val().trim(),
-    start: moment($("#start-input").val().trim(), "MM/DD/YYYY").format("X"),
+    start: moment($("#start-input").val().trim(), "hh:mm").format("X"),
     rate: $("#rate-input").val().trim()
   };
 
@@ -68,7 +68,7 @@ dbRef.on("child_added", function(childSnapshot, prevChildKey) {
   console.log(newEmp.months);
   
   // Prettify the employee start (after using it to calculate months...)
-  newEmp.start = moment.unix(newEmp.start).format("MM/DD/YY");
+  newEmp.start = moment.unix(newEmp.start).format("hh:mm");
 
   // Calculate the total billed rate
   newEmp.billed = newEmp.months * newEmp.rate;
