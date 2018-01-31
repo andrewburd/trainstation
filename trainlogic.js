@@ -39,7 +39,8 @@ $("#add-employee-btn").click(function(event) {
   const newEmp = {
     name: $("#employee-name-input").val().trim(),
     role: $("#role-input").val().trim(),
-    start: moment($("#start-input").val().trim(), "hh:mm").format("X"),
+    start: $("#start-input").val().trim(),
+    //start: moment($("#start-input").val().trim(), "hh:mm"),
     rate: $("#rate-input").val().trim()
   };
 
@@ -50,7 +51,7 @@ $("#add-employee-btn").click(function(event) {
   console.log(newEmp);
   
   // Alert
-  alert("Employee successfully added");
+  //alert("Employee successfully added");
   resetInputs();
   
 });
@@ -62,17 +63,39 @@ dbRef.on("child_added", function(childSnapshot, prevChildKey) {
   const newEmp = childSnapshot.val();
   console.log(newEmp);
   
-  // Calculate the months worked using hardcore math
-  // To calculate the months worked
-  newEmp.months = moment().diff(moment.unix(newEmp.start, "X"), "months");
-  console.log(newEmp.months);
+  // // Calculate the months worked using hardcore math
+  // // To calculate the months worked
+  // newEmp.months = moment().diff(moment.unix(newEmp.start, "X"), "months");
+  // console.log(newEmp.months);
   
-  // Prettify the employee start (after using it to calculate months...)
-  newEmp.start = moment.unix(newEmp.start).format("hh:mm");
+  // // Prettify the employee start (after using it to calculate months...)
+  // newEmp.start = moment.unix(newEmp.start).format("hh:mm");
 
-  // Calculate the total billed rate
-  newEmp.billed = newEmp.months * newEmp.rate;
-  console.log(newEmp.billed);
+  // // Calculate the total billed rate
+  // newEmp.billed = newEmp.months * newEmp.rate;
+  // console.log(newEmp.billed);
+  firstTimeConverted = moment(newEmp.start, "hh:mm").subtract(1, "years");
+  console.log(firstTimeConverted);
+
+// Current Time
+  currentTime = moment();
+  console.log("CURRENT TIME: " + moment(currentTime).format("hh:mm"));
+
+// Difference between the times
+  diffTime = moment().diff(moment(firstTimeConverted), "minutes");
+  console.log("DIFFERENCE IN TIME: " + diffTime);
+
+// Time apart (remainder)
+  tRemainder = diffTime % newEmp.rate;
+  console.log(tRemainder);
+
+// Minute Until Train
+  tMinutesTillTrain = newEmp.rate - tRemainder;
+  console.log("MINUTES TILL TRAIN: " + tMinutesTillTrain);
+
+// Next Train
+  nextTrain = moment().add(tMinutesTillTrain, "minutes");
+  console.log("ARRIVAL TIME: " + moment(nextTrain).format("hh:mm"));
 
   // Add each employee's data into the table
   $("#employee-table > tbody").append(createEmployeeRow(newEmp));
@@ -82,9 +105,9 @@ function createEmployeeRow(emp) {
   const trow = $('<tr>');
   trow.append(`<td>${emp.name}</td>`)
       .append(`<td>${emp.role}</td>`)
-      .append(`<td>${emp.start}</td>`)
-      .append(`<td>${emp.months}</td>`)
       .append(`<td>${emp.rate}</td>`)
+      .append(`<td>${nextTrain}</td>`)
+      .append(`<td>${tMinutesTillTrain}</td>`)
 
   return trow;
 }
